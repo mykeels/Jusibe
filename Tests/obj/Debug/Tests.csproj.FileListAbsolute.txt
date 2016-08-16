@@ -1,0 +1,6 @@
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\Tests.exe.config
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\Tests.exe
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\Tests.pdb
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\obj\Debug\Tests.exe
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\obj\Debug\Tests.pdb
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\obj\Debug\Tests.csprojResolveAssemblyReference.cache
