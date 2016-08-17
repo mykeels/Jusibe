@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Jusibe.Models
 {
@@ -12,14 +13,33 @@ namespace Jusibe.Models
         public static string GetEndpointUrl()
         {
             string root_url = Common.rootUrl;
-            return root_url.TrimEnd('/') + "send_sms";
+            return root_url.TrimEnd('/') + "/send_sms";
         }
 
         public class Request
         {
             public string to { get; set; }
             public string from { get; set; }
-            public int message { get; set; }
+            public string message { get; set; }
+
+            public Request()
+            {
+
+            }
+
+            public Request(string to, string from, string message)
+            {
+                this.to = to;
+                this.from = from;
+                this.message = message;
+            }
+
+            public string getAsQuery()
+            {
+                return "?to=" + HttpUtility.UrlEncode(this.to) + 
+                    "&from=" + HttpUtility.UrlEncode(this.from) + 
+                    "&message=" + HttpUtility.UrlEncode(this.message);
+            }
         }
 
         public class Response
@@ -38,7 +58,7 @@ namespace Jusibe.Models
             public static string GetEndpointUrl(string message_id)
             {
                 string root_url = Common.rootUrl;
-                return root_url.TrimEnd('/') + "delivery_status/?message_id=" + message_id;
+                return root_url.TrimEnd('/') + "/delivery_status/?message_id=" + message_id;
             }
         }
     }

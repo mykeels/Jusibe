@@ -14,7 +14,6 @@ namespace Jusibe
         public string publicKey { get; set; }
         public string accessToken { get; set; }
         
-
         public Client(string key = null, string token = null)
         {
             if (!String.IsNullOrEmpty(key)) this.publicKey = key;
@@ -34,7 +33,7 @@ namespace Jusibe
         public Promise<Models.SMS.Response> SendSms(Models.SMS.Request request)
         {
             var credentials = _getCredentials();
-            return Api.PostAsync<Models.SMS.Response>(Models.SMS.GetEndpointUrl(), request.ToJson(),
+            return Api.PostAsync<Models.SMS.Response>(Models.SMS.GetEndpointUrl() + request.getAsQuery(), "",
                 "application/json", null, true, credentials).Error((Exception ex) =>
                 {
                     throw ex;
@@ -44,7 +43,7 @@ namespace Jusibe
         public Promise<string> SendSmsString(Models.SMS.Request request)
         {
             var credentials = _getCredentials();
-            return Api.PostAsync(Models.SMS.GetEndpointUrl(), request.ToJson(),
+            return Api.PostAsync(Models.SMS.GetEndpointUrl() + request.getAsQuery(), "",
                 "application/json", null, true, credentials).Error((Exception ex) =>
                 {
                     throw ex;

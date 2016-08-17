@@ -12,7 +12,7 @@ namespace Jusibe.Models
         public static string GetEndpointUrl()
         {
             string root_url = Common.rootUrl;
-            return root_url.TrimEnd('/') + "get_credits";
+            return root_url.TrimEnd('/') + "/get_credits";
         }
     }
 }

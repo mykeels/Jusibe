@@ -4,3 +4,14 @@ C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\T
 C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\obj\Debug\Tests.exe
 C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\obj\Debug\Tests.pdb
 C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\obj\Debug\Tests.csprojResolveAssemblyReference.cache
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\Extensions.dll
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\Jusibe.dll
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\Newtonsoft.Json.dll
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\SendGridMail.dll
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\Elmah.dll
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\SendGrid.SmtpApi.dll
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\System.Data.SqlServerCe.dll
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\Jusibe.pdb
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\Extensions.pdb
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\bin\Debug\Newtonsoft.Json.xml
+C:\Users\michaeli\Documents\Visual Studio 2015\Projects\Jusibe\Tests\obj\Debug\Tests.csproj.Tests.exe.config
