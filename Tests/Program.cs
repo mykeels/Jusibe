@@ -24,7 +24,7 @@ namespace Tests
                 throw ex;
             });
 
-            SMS.Request request = new SMS.Request("08083850091", "mykeels", "You sir, are a boss!?## I am also a good person ** (&()) = me and you!");
+            SMS.Request request = new SMS.Request("08083850091", "mykeels", "You Rock!");
             Console.WriteLine(request.ToJson(true));
             client.SendSms(request).Success((SMS.Response response) =>
             {
