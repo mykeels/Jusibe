@@ -7,13 +7,13 @@
 ##Usage
 A Client class provides three public methods for accessing the API. Instantianting the class is as given below:
 
-```
+```cs
 Jusibe.Client client = new Jusibe.Client();
 ```
 
 Its constructor may take two string parameters:
 
-```
+```cs
 string publicKey = "[Enter Public Key Here]";
 string accessToken = "[Enter Access Token]";
 
@@ -24,7 +24,7 @@ When not provided, the parameters default to null, and the public key and access
 
 Make sure to add the following keys to the App Settings as given below:
 
-```
+```xml
 <appSettings>
     <add key="Jusibe_Root_Url" value="https://jusibe.com/smsapi/" />
     <add key="Jusibe_Public_Key" value="" />
@@ -39,7 +39,7 @@ Its methods are:
 This makes an authentication request to the Jusibe API, and returns a `Promise<Jusibe.Models.Credit>` as Response.
 
 ##### Usage
-```
+```cs
 Jusibe.Client client = new Jusibe.Client();
 client.GetCredits().Success((Credit credit) =>
     {
@@ -55,7 +55,7 @@ client.GetCredits().Success((Credit credit) =>
 This lets you make a request to the Jusibe API, to send an SMS. It takes a `Jusibe.Models.SMS.Request` object as a parameter and returns a `Promise<Jusibe.Models.SMS.Response>` object.
 
 ##### Usage
-```
+```cs
 SMS.Request request = new SMS.Request("[phone number here]", "[sender name here]", "[sms message here]");
 client.SendSms(request).Success((SMS.Response response) =>
 {
@@ -71,7 +71,7 @@ client.SendSms(request).Success((SMS.Response response) =>
 This gives you information on the delivery status of previous sent messages. It takes a single paramter: `string message_id` and returns a Promise<Jusibe.Models.SMS.DeliveryStatus> object
 
 ##### Usage
-```
+```cs
 client.CheckDelivery("nw53j49123").Success((Jusibe.Models.SMS.DeliveryStatus status) =>
 {
     string jsonResponse = Newtonsoft.Json.JsonConvert.SerializeObject(status);
