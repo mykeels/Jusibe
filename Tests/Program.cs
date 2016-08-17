@@ -36,6 +36,16 @@ namespace Tests
                 throw ex;
             });
 
+            client.CheckDelivery("nw53j49123").Success((SMS.DeliveryStatus status) =>
+            {
+                string jsonResponse = status.ToJson(true);
+                jsonResponse.SaveToFile("sms-delivery-status.json");
+                Console.WriteLine(jsonResponse);
+            }).Error((Exception ex) =>
+            {
+                throw ex;
+            });
+
             Console.Read();
         }
     }
