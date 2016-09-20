@@ -27,8 +27,8 @@ Make sure to add the following keys to the App Settings as given below:
 ```xml
 <appSettings>
     <add key="Jusibe_Root_Url" value="https://jusibe.com/smsapi/" />
-    <add key="Jusibe_Public_Key" value="" />
-    <add key="Jusibe_Access_Token" value="" />
+    <add key="Jusibe_Public_Key" value="[Public Key]" />
+    <add key="Jusibe_Access_Token" value="[Access Token]" />
 </appSettings>
 ```
 
@@ -55,6 +55,8 @@ client.GetCredits().Success((Credit credit) =>
 This lets you make a request to the Jusibe API, to send an SMS. It takes a `Jusibe.Models.SMS.Request` object as a parameter and returns a `Promise<Jusibe.Models.SMS.Response>` object.
 
 ##### Usage
+
+##### Single Recipient
 ```cs
 SMS.Request request = new SMS.Request("[phone number here]", "[sender name here]", "[sms message here]");
 client.SendSms(request).Success((SMS.Response response) =>
@@ -67,12 +69,25 @@ client.SendSms(request).Success((SMS.Response response) =>
 });
 ```
 
+##### Multiple Recipients
+```cs
+Jusibe.Client client = new Jusibe.Client();
+SMS.Requests requests = new SMS.Requests(new List<string>() { "[phone number 1]", "[phone number 2]", "[phone number 3]" }, "Jollof", "Jollof is delicious!");
+client.SendSms(requests).Success((responses) =>
+{
+    responses.ForEach((response) => Console.Write(Newtonsoft.Json.JsonConvert.SerializeObject(response)));
+}).Error((Exception ex) =>
+{
+    throw ex;
+});
+```
+
 #### Check SMS Delivery Status
 This gives you information on the delivery status of previous sent messages. It takes a single paramter: `string message_id` and returns a Promise<Jusibe.Models.SMS.DeliveryStatus> object
 
 ##### Usage
 ```cs
-client.CheckDelivery("nw53j49123").Success((Jusibe.Models.SMS.DeliveryStatus status) =>
+client.CheckDelivery("[Message ID]").Success((Jusibe.Models.SMS.DeliveryStatus status) =>
 {
     string jsonResponse = Newtonsoft.Json.JsonConvert.SerializeObject(status);
     Console.WriteLine(jsonResponse);
