@@ -14,7 +14,7 @@ namespace Tests
         public static void Main(string[] args)
         {
             Client client = new Client();
-            client.GetCredits().Success((Credit credit) =>
+            /*client.GetCredits().Success((Credit credit) =>
             {
                 string jsonResponse = credit.ToJson(true);
                 jsonResponse.SaveToFile("credits.json");
@@ -22,9 +22,19 @@ namespace Tests
             }).Error((Exception ex) =>
             {
                 throw ex;
-            });
+            });*/
 
-            SMS.Request request = new SMS.Request("08083850091", "mykeels", "You Rock!");
+            /*SMS.Requests requests = new SMS.Requests(new List<string>() { "08083850091", "08054139218" }, "Igbo Overlords!", "Testing!!!");
+            client.SendSms(requests).Success((responses) =>
+            {
+                responses.ForEach((response) => Console.Write(response.ToJson(true)));
+            }).Error((Exception ex) =>
+            {
+                throw ex;
+            });
+            Console.Read();*/
+
+            SMS.Request request = new SMS.Request("08054139218", "Overlord!", @"You SUCK!!!");
             Console.WriteLine(request.ToJson(true));
             client.SendSms(request).Success((SMS.Response response) =>
             {
@@ -36,7 +46,7 @@ namespace Tests
                 throw ex;
             });
 
-            client.CheckDelivery("nw53j49123").Success((SMS.DeliveryStatus status) =>
+            /*client.CheckDelivery("nw53j49123").Success((SMS.DeliveryStatus status) =>
             {
                 string jsonResponse = status.ToJson(true);
                 jsonResponse.SaveToFile("sms-delivery-status.json");
@@ -44,7 +54,7 @@ namespace Tests
             }).Error((Exception ex) =>
             {
                 throw ex;
-            });
+            });*/
 
             Console.Read();
         }

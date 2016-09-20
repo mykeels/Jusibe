@@ -16,6 +16,22 @@ namespace Jusibe.Models
             return root_url.TrimEnd('/') + "/send_sms";
         }
 
+        public class Requests: List<Request>
+        {
+            public Requests()
+            {
+
+            }
+
+            public Requests(List<string> recipients, string from, string message)
+            {
+                recipients.ForEach((r) =>
+                {
+                    this.Add(new Request(r, from, message));
+                });
+            }
+        }
+
         public class Request
         {
             public string to { get; set; }
@@ -38,6 +54,13 @@ namespace Jusibe.Models
             {
                 return "?to=" + HttpUtility.UrlEncode(this.to) + 
                     "&from=" + HttpUtility.UrlEncode(this.from) + 
+                    "&message=" + HttpUtility.UrlEncode(this.message);
+            }
+
+            public string getAsBody()
+            {
+                return "to=" + HttpUtility.UrlEncode(this.to) +
+                    "&from=" + HttpUtility.UrlEncode(this.from) +
                     "&message=" + HttpUtility.UrlEncode(this.message);
             }
         }

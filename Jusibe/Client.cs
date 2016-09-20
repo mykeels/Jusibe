@@ -13,7 +13,7 @@ namespace Jusibe
     {
         public string publicKey { get; set; }
         public string accessToken { get; set; }
-        
+
         public Client(string key = null, string token = null)
         {
             if (!String.IsNullOrEmpty(key)) this.publicKey = key;
@@ -30,11 +30,30 @@ namespace Jusibe
             return credentials;
         }
 
+        public Promise<List<Models.SMS.Response>> SendSms(Models.SMS.Requests requests)
+        {
+            var credentials = _getCredentials();
+            return Promise<List<Models.SMS.Response>>.Create(() =>
+            {
+                List<Models.SMS.Response> ret = new List<Models.SMS.Response>();
+                for (int i = 0; i < requests.Count; i++)
+                {
+                    Models.SMS.Request request = requests[i];
+                    ret.Add(Api.Post<Models.SMS.Response>(Models.SMS.GetEndpointUrl(), request.getAsBody(),
+                "application/x-www-form-urlencoded", null, true, credentials));
+                }
+                return ret;
+            }).Error((Exception ex) =>
+            {
+                throw ex;
+            });
+        }
+
         public Promise<Models.SMS.Response> SendSms(Models.SMS.Request request)
         {
             var credentials = _getCredentials();
-            return Api.PostAsync<Models.SMS.Response>(Models.SMS.GetEndpointUrl() + request.getAsQuery(), "",
-                "application/json", null, true, credentials).Error((Exception ex) =>
+            return Api.PostAsync<Models.SMS.Response>(Models.SMS.GetEndpointUrl(), request.getAsBody(),
+                "application/x-www-form-urlencoded", null, true, credentials).Error((Exception ex) =>
                 {
                     throw ex;
                 });
@@ -44,7 +63,7 @@ namespace Jusibe
         {
             var credentials = _getCredentials();
             return Api.PostAsync(Models.SMS.GetEndpointUrl() + request.getAsQuery(), "",
-                "application/json", null, true, credentials).Error((Exception ex) =>
+                "application/x-www-form-urlencoded", null, true, credentials).Error((Exception ex) =>
                 {
                     throw ex;
                 });
@@ -62,7 +81,7 @@ namespace Jusibe
         public Promise<Models.SMS.DeliveryStatus> CheckDelivery(string message_id)
         {
             var credentials = _getCredentials();
-            return Api.GetAsync<Models.SMS.DeliveryStatus>(Models.SMS.DeliveryStatus.GetEndpointUrl(message_id), 
+            return Api.GetAsync<Models.SMS.DeliveryStatus>(Models.SMS.DeliveryStatus.GetEndpointUrl(message_id),
                 null, credentials).Error((Exception ex) =>
                 {
                     throw ex;
