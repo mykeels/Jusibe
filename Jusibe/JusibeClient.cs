@@ -67,5 +67,23 @@ namespace Jusibe
                 }
             });
         }
+
+        public async Task<DeliveryStatusModel> GetDeliveryStatus(string messageId) {
+            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("delivery_status?message_id=" + messageId));
+            request.Method = Constants.GET;
+            request.ContentType = Constants.JSON;
+            request.Credentials = this.config.Credentials;
+            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
+            return await Task.Run(() => {
+                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
+                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
+                        string responseAsText = sr.ReadToEnd();
+                        Console.WriteLine(responseAsText);
+                        DeliveryStatusModel responseModel = JsonConvert.DeserializeObject<DeliveryStatusModel>(responseAsText);
+                        return responseModel;
+                    }
+                }
+            });
+        }
     }
 }
