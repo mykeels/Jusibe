@@ -4,7 +4,9 @@ This a Rest API Client Library based on the Official API Documentation provided 
 
 ## Installation
 
-[Microsoft .NET 4.5 Framework](https://www.microsoft.com/en-us/download/details.aspx?id=30653), Visual Studio 2012 or later, [Extensions](https://github.com/mykeels/Extensions)
+```bash
+dotnet add package Jusibe
+```
 
 ## Usage
 
