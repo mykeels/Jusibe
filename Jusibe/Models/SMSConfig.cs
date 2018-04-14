@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Collections.Generic;
 
 namespace Jusibe.Models
@@ -13,10 +14,13 @@ namespace Jusibe.Models
 
         public NetworkCredential Credentials {
             get {
-                var credential = new NetworkCredential();
-                credential.UserName = this.PublicKey;
-                credential.Password = this.AccessToken;
-                return credential;
+                return new NetworkCredential(this.PublicKey, this.AccessToken);
+            }
+        }
+
+        public string AuthorizationHeader {
+            get {
+                return "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(this.PublicKey + ":" + this.AccessToken));
             }
         }
 

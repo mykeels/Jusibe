@@ -26,10 +26,11 @@ namespace Jusibe
         }
 
         public async Task<ResponseModel> Send(RequestModel model) {
-            var request = HttpWebRequest.Create(this.config.ResolveURL("send_sms"));
+            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("send_sms"));
             request.Method = Constants.POST;
             request.ContentType = Constants.X_WWW_FORM_URL_ENCODED;
             request.Credentials = this.config.Credentials;
+            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
             return await Task.Run(() => {
                 using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
                     using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
@@ -42,14 +43,16 @@ namespace Jusibe
         }
 
         public async Task<CreditModel> GetCredits() {
-            var request = HttpWebRequest.Create(this.config.ResolveURL("get_credits"));
+            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("get_credits"));
             request.Method = Constants.GET;
             request.ContentType = Constants.JSON;
             request.Credentials = this.config.Credentials;
+            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
             return await Task.Run(() => {
                 using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
                     using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
                         string responseAsText = sr.ReadToEnd();
+                        Console.WriteLine(responseAsText);
                         CreditModel responseModel = JsonConvert.DeserializeObject<CreditModel>(responseAsText);
                         return responseModel;
                     }
