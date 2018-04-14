@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Jusibe.Tests
 {
-    public class UnitTest1
+    public class SmsTest
     {
         [Fact]
         public void Test1()
