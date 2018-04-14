@@ -56,6 +56,7 @@ This gives you information on the delivery status of previous sent messages.
 var result = client.GetDeliveryStatus("message_id").Result;
 
 Console.WriteLine(result.SmsCredits);
+```
 
 ## Want to Contribute?
 You are free to fork this repo and make pull requests to enhance the functionalities of this library.
