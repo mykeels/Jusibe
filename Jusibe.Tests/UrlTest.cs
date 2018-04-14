@@ -26,6 +26,7 @@ namespace Jusibe.Tests
             var config = new SMSConfig() {
                 AccessToken = System.Environment.GetEnvironmentVariable("Jusibe_Token"),
                 PublicKey = System.Environment.GetEnvironmentVariable("Jusibe_Key")
+            };
 
             Assert.NotNull(config.Credentials.UserName);
             Assert.NotNull(config.Credentials.Password);
