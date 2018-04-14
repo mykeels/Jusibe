@@ -18,7 +18,7 @@ namespace Jusibe.Models
         public string Message { get; set; }
 
         public string AsQuery() {
-            return "?to=" + WebUtility.UrlEncode(this.To) + 
+            return "to=" + WebUtility.UrlEncode(this.To) + 
                     "&from=" + WebUtility.UrlEncode(this.From) + 
                     "&message=" + WebUtility.UrlEncode(this.Message);
         }

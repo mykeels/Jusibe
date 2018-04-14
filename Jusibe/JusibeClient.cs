@@ -31,10 +31,12 @@ namespace Jusibe
             request.ContentType = Constants.X_WWW_FORM_URL_ENCODED;
             request.Credentials = this.config.Credentials;
             request.Headers.Add("Authorization", this.config.AuthorizationHeader);
+            
             return await Task.Run(() => {
                 using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
                     using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
                         string responseAsText = sr.ReadToEnd();
+                        Console.WriteLine(responseAsText);
                         ResponseModel responseModel = JsonConvert.DeserializeObject<ResponseModel>(responseAsText);
                         return responseModel;
                     }
