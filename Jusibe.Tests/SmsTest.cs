@@ -25,7 +25,11 @@ namespace Jusibe.Tests
                 Message = "Hello World"
             }).Result;
 
-            Console.WriteLine(JsonConvert.SerializeObject(result));
+            Assert.NotNull(result.MessageId);
+            Assert.Equal("Sent", result.Status);
+            Assert.Equal(1, result.SmsCredits);
+
+            Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
         }
 
         [Fact]

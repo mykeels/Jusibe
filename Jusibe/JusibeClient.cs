@@ -33,6 +33,12 @@ namespace Jusibe
             request.Headers.Add("Authorization", this.config.AuthorizationHeader);
             
             return await Task.Run(() => {
+                using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+                    streamWriter.Write(model.AsQuery());
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
+
                 using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
                     using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
                         string responseAsText = sr.ReadToEnd();
