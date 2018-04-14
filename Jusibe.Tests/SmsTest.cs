@@ -27,5 +27,19 @@ namespace Jusibe.Tests
 
             Console.WriteLine(JsonConvert.SerializeObject(result));
         }
+
+        [Fact]
+        public void Sms_Get_Credits()
+        {
+            DotNetEnv.Env.Load("../../../.env");
+            JusibeClient client = new JusibeClient(new SMSConfig() {
+                AccessToken = System.Environment.GetEnvironmentVariable("Jusibe_Token"),
+                PublicKey = System.Environment.GetEnvironmentVariable("Jusibe_Key")
+            });
+
+            var result = client.GetCredits().Result;
+
+            Console.WriteLine(JsonConvert.SerializeObject(result));
+        }
     }
 }
