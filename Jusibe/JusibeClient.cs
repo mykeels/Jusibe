@@ -40,5 +40,21 @@ namespace Jusibe
                 }
             });
         }
+
+        public async Task<CreditModel> GetCredits() {
+            var request = HttpWebRequest.Create(this.config.ResolveURL("get_credits"));
+            request.Method = Constants.GET;
+            request.ContentType = Constants.JSON;
+            request.Credentials = this.config.Credentials;
+            return await Task.Run(() => {
+                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
+                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
+                        string responseAsText = sr.ReadToEnd();
+                        CreditModel responseModel = JsonConvert.DeserializeObject<CreditModel>(responseAsText);
+                        return responseModel;
+                    }
+                }
+            });
+        }
     }
 }
