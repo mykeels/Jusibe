@@ -10,15 +10,15 @@ using Newtonsoft.Json;
 
 namespace Jusibe
 {
-    public class Client
+    public class JusibeClient
     {
         private SMSConfig config;
 
-        public Client(SMSConfig config) {
+        public JusibeClient(SMSConfig config) {
             this.config = config;
         }
 
-        public Client(string key, string token) {
+        public JusibeClient(string key, string token) {
             this.config = new SMSConfig() {
                 AccessToken = token,
                 PublicKey = key
