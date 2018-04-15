@@ -58,7 +58,8 @@ var result = client.GetDeliveryStatus("message_id").Result;
 Console.WriteLine(result.SmsCredits);
 ```
 
-## Want to Contribute?
+## Want to Contribute
+
 You are free to fork this repo and make pull requests to enhance the functionalities of this library.
 
 ### How you can thank me
