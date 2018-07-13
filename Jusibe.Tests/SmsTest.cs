@@ -51,8 +51,6 @@ namespace Jusibe.Tests
         public void Sms_Get_Credits()
         {
             this.LoadEnvironment();
-
-            DotNetEnv.Env.Load("../../../.env");
             
             JusibeClient client = new JusibeClient(new SMSConfig() {
                 AccessToken = System.Environment.GetEnvironmentVariable("Jusibe_Token"),
@@ -67,7 +65,7 @@ namespace Jusibe.Tests
         [Fact]
         public void Sms_Get_Delivery_Status()
         {
-            DotNetEnv.Env.Load("../../../.env");
+            this.LoadEnvironment();
             
             JusibeClient client = new JusibeClient(new SMSConfig() {
                 AccessToken = System.Environment.GetEnvironmentVariable("Jusibe_Token"),
