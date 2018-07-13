@@ -10,9 +10,25 @@ namespace Jusibe.Tests
 {
     public class UrlTest
     {
+        protected void LoadEnvironment() {
+            string filename = "../../../.env";
+            
+            if (System.IO.File.Exists(filename)) {
+                DotNetEnv.Env.Load(filename);
+            }
+            else {
+                ConsoleColor foreground = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Warning: No Env File Found");
+                Console.ForegroundColor = foreground;
+            }
+        }
+
         [Fact]
         public void Url_Is_Generated_Properly()
         {
+            this.LoadEnvironment();
+
             var config = new SMSConfig() {
                 
             };
@@ -23,6 +39,8 @@ namespace Jusibe.Tests
         [Fact]
         public void Network_Credentials_Are_Generated_Properly()
         {
+            this.LoadEnvironment();
+
             var config = new SMSConfig() {
                 AccessToken = System.Environment.GetEnvironmentVariable("Jusibe_Token"),
                 PublicKey = System.Environment.GetEnvironmentVariable("Jusibe_Key")

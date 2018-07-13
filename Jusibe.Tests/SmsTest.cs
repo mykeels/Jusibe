@@ -10,10 +10,25 @@ namespace Jusibe.Tests
 {
     public class SmsTest
     {
+        protected void LoadEnvironment() {
+            string filename = "../../../.env";
+
+            if (System.IO.File.Exists(filename)) {
+                DotNetEnv.Env.Load(filename);
+            }
+            else {
+                ConsoleColor foreground = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Warning: No Env File Found");
+                Console.ForegroundColor = foreground;
+            }
+        }
+
         [Fact]
         public void Sms_Gets_Sent()
         {
-            DotNetEnv.Env.Load("../../../.env");
+            this.LoadEnvironment();
+
             JusibeClient client = new JusibeClient(new SMSConfig() {
                 AccessToken = System.Environment.GetEnvironmentVariable("Jusibe_Token"),
                 PublicKey = System.Environment.GetEnvironmentVariable("Jusibe_Key")
@@ -35,6 +50,8 @@ namespace Jusibe.Tests
         [Fact]
         public void Sms_Get_Credits()
         {
+            this.LoadEnvironment();
+
             DotNetEnv.Env.Load("../../../.env");
             
             JusibeClient client = new JusibeClient(new SMSConfig() {
