@@ -38,15 +38,41 @@ namespace Jusibe
                     streamWriter.Flush();
                     streamWriter.Close();
                 }
-
-                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
-                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
-                        string responseAsText = sr.ReadToEnd();
-                        Console.WriteLine(responseAsText);
-                        ResponseModel responseModel = JsonConvert.DeserializeObject<ResponseModel>(responseAsText);
-                        return responseModel;
+                
+               var responseModel = new ResponseModel();
+                try
+                {//Exception occur here as a result of Insufficient credit balance, Invalid phone number or internet connectivity failure
+                    using (var httpResponse = (HttpWebResponse)request.GetResponse())
+                    {
+                        using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream()))
+                        {
+                            string responseAsText = sr.ReadToEnd();
+                            Console.WriteLine(responseAsText);
+                            responseModel = JsonConvert.DeserializeObject<ResponseModel>(responseAsText);                         
+                        }
                     }
                 }
+                catch (WebException ex)
+                {
+                    HttpWebResponse webResponse = (HttpWebResponse)ex.Response;
+                    if (webResponse!=null)
+                    {
+                        if (webResponse.StatusCode == HttpStatusCode.BadRequest)
+                        {//Occur as a result of Insufficient credit balance or invalid number 
+                            var checkBalance = await GetCredits();
+                            responseModel.Status = checkBalance.SmsCredits <= 3 ? "Insufficient credit" : "Invalid number";
+                        }
+                        else
+                        {// Any other error that may occur
+                            responseModel.Status = "Unknown error";
+                        }
+                    }
+                    else //When there is internet connectivity failure 'webResponse' will be equal to null
+                    {
+                        responseModel.Status = "Internet problem";
+                    }                   
+                }
+                return responseModel;
             });
         }
 
