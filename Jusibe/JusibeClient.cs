@@ -38,6 +38,67 @@ namespace Jusibe
                     streamWriter.Flush();
                     streamWriter.Close();
                 }
+
+                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
+                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
+                        string responseAsText = sr.ReadToEnd();
+                        Console.WriteLine(responseAsText);
+                        ResponseModel responseModel = JsonConvert.DeserializeObject<ResponseModel>(responseAsText);
+                        return responseModel;
+                    }
+                }
+            });
+        }
+        
+        public async Task<CreditModel> GetCredits() {
+            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("get_credits"));
+            request.Method = Constants.GET;
+            request.ContentType = Constants.JSON;
+            request.Credentials = this.config.Credentials;
+            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
+            return await Task.Run(() => {
+                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
+                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
+                        string responseAsText = sr.ReadToEnd();
+                        Console.WriteLine(responseAsText);
+                        CreditModel responseModel = JsonConvert.DeserializeObject<CreditModel>(responseAsText);
+                        return responseModel;
+                    }
+                }
+            });
+        }
+
+        public async Task<DeliveryStatusModel> GetDeliveryStatus(string messageId) {
+            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("delivery_status?message_id=" + messageId));
+            request.Method = Constants.GET;
+            request.ContentType = Constants.JSON;
+            request.Credentials = this.config.Credentials;
+            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
+            return await Task.Run(() => {
+                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
+                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
+                        string responseAsText = sr.ReadToEnd();
+                        Console.WriteLine(responseAsText);
+                        DeliveryStatusModel responseModel = JsonConvert.DeserializeObject<DeliveryStatusModel>(responseAsText);
+                        return responseModel;
+                    }
+                }
+            });
+        }
+        
+        public async Task<ResponseModel> SendSms(RequestModel model) {
+            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("send_sms"));
+            request.Method = Constants.POST;
+            request.ContentType = Constants.X_WWW_FORM_URL_ENCODED;
+            request.Credentials = this.config.Credentials;
+            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
+            
+            return await Task.Run(() => {
+                using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+                    streamWriter.Write(model.AsQuery());
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
                 
                var responseModel = new ResponseModel();
                 try
@@ -73,42 +134,6 @@ namespace Jusibe
                     }                   
                 }
                 return responseModel;
-            });
-        }
-
-        public async Task<CreditModel> GetCredits() {
-            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("get_credits"));
-            request.Method = Constants.GET;
-            request.ContentType = Constants.JSON;
-            request.Credentials = this.config.Credentials;
-            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
-            return await Task.Run(() => {
-                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
-                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
-                        string responseAsText = sr.ReadToEnd();
-                        Console.WriteLine(responseAsText);
-                        CreditModel responseModel = JsonConvert.DeserializeObject<CreditModel>(responseAsText);
-                        return responseModel;
-                    }
-                }
-            });
-        }
-
-        public async Task<DeliveryStatusModel> GetDeliveryStatus(string messageId) {
-            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("delivery_status?message_id=" + messageId));
-            request.Method = Constants.GET;
-            request.ContentType = Constants.JSON;
-            request.Credentials = this.config.Credentials;
-            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
-            return await Task.Run(() => {
-                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
-                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
-                        string responseAsText = sr.ReadToEnd();
-                        Console.WriteLine(responseAsText);
-                        DeliveryStatusModel responseModel = JsonConvert.DeserializeObject<DeliveryStatusModel>(responseAsText);
-                        return responseModel;
-                    }
-                }
             });
         }
     }
