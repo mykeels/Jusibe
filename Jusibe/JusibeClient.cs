@@ -86,21 +86,23 @@ namespace Jusibe
             });
         }
         
-         public async Task<ResponseModel> SendSms(RequestModel model) {
+        public async Task<ResponseModel> SendSms(RequestModel model)
+        {
             var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("send_sms"));
             request.Method = Constants.POST;
             request.ContentType = Constants.X_WWW_FORM_URL_ENCODED;
             request.Credentials = this.config.Credentials;
             request.Headers.Add("Authorization", this.config.AuthorizationHeader);
-            
-            return await Task.Run(() => {
-                using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
+
+            return await Task.Run(async () => {
+                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+                {
                     streamWriter.Write(model.AsQuery());
                     streamWriter.Flush();
                     streamWriter.Close();
                 }
-                
-               var responseModel = new ResponseModel();
+
+                var responseModel = new ResponseModel();
                 try
                 {//Exception occur here as a result of Insufficient credit balance, Invalid phone number or internet connectivity failure
                     using (var httpResponse = (HttpWebResponse)request.GetResponse())
@@ -109,14 +111,14 @@ namespace Jusibe
                         {
                             string responseAsText = sr.ReadToEnd();
                             Console.WriteLine(responseAsText);
-                            responseModel = JsonConvert.DeserializeObject<ResponseModel>(responseAsText);                         
+                            responseModel = JsonConvert.DeserializeObject<ResponseModel>(responseAsText);
                         }
                     }
                 }
                 catch (WebException ex)
                 {
                     HttpWebResponse webResponse = (HttpWebResponse)ex.Response;
-                    if (webResponse!=null)
+                    if (webResponse != null)
                     {
                         if (webResponse.StatusCode == HttpStatusCode.BadRequest)
                         {//Occur as a result of Insufficient credit balance or invalid number 
@@ -131,7 +133,7 @@ namespace Jusibe
                     else //When there is internet connectivity failure 'webResponse' will be equal to null
                     {
                         responseModel.Status = "Internet problem";
-                    }                   
+                    }
                 }
                 return responseModel;
             });
