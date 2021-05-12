@@ -2,7 +2,7 @@
 
 namespace Jusibe.Models
 {
-    public class RequestModel
+    public class BulkRequestModel
     {
         [JsonProperty("to")]
         public string To { get; set; }
