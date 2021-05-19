@@ -121,7 +121,7 @@ You are free to fork this repo and make pull requests to enhance the functionali
 Thanks, Ikechi Michael I.
 
 PS.
-@allengblack made some significant updates to this. Follow him on [Twitter](https://github.com/allengblack), too!
+[@allengblack](https://github.com/allengblack) made some significant updates to this. Follow him on [Twitter](https://github.com/allengblack), too!
 
 
 ### License
