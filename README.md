@@ -9,27 +9,29 @@ dotnet add package Jusibe
 ```
 
 ## Usage
+### To use this client in a .NET Core application:
 
-First, in your `appsettings.json` file, create a new section for Jusibe as follows:
+1. First, in your `appsettings.json` file, create a new section for Jusibe.
+
 ```json
 "Jusibe": {
     "Key": "Your API Key here",
-    "Token": "You can get both the Key and Token from your Jusibe Dashboard"
+    "Token": "You can get both the Key and Token from your Jusibe Dashboard",
+    "BaseAddress" : "Jusibe Base Address. (It's probably 'https://jusibe.com/smsapi')"
 }
 ```
-Then using the client is as simple as adding this line to your ConfigureServices method in your Startup.cs file:
-
+2. Add this snippet to your ConfigureServices method in your Startup.cs file:
 ```cs
 using Jusibe;
 
 public void ConfigureServices(IServiceCollection services)
 {
-    // other configured services ommitted for brevity
+    // other services ommitted for brevity
     services.AddJusibeClient(Configuration);
 }
 ```
 
-And then the client can be added wherever it is needed via Dependency Injection. For example: 
+And then the client can be added wherever it is needed via Dependency Injection: 
 ```cs
 public class SmsService
 {
@@ -40,8 +42,21 @@ public class SmsService
         _jusibeClient = jusibeClient;
     }
     ...
-    // Rest of the class goes here as usual
+    // Rest of your code here...
 }
+```
+
+### To use this client in a .NET CLI appication:
+
+```cs
+using Jusibe;
+
+var jusibeClient = new JusibeClient(new JusibeClientOptions
+{
+    Key = "Your Jusibe Key Here",
+    Token = "Your Jusibe Token Here",
+    BaseAddress = "https://jusibe.com/smsapi"
+});
 ```
 
 ## What can you do with this?
@@ -105,7 +120,8 @@ You are free to fork this repo and make pull requests to enhance the functionali
 
 Thanks, Ikechi Michael I.
 
-[@allengblack](https://twitter.com/allengblack) made some significant updates to this. Follow him on Twitter, too and you can see some more of his work [here](https://github.com/allengblack)
+PS.
+@allengblack made some significant updates to this. Follow him on [Twitter](https://github.com/allengblack), too!
 
 
 ### License
