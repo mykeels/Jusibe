@@ -1,142 +1,161 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Jusibe.Models;
-using Jusibe.Common;
+﻿using Jusibe.Models;
 using Newtonsoft.Json;
+using System;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Jusibe
 {
-    public class JusibeClient
+    public class JusibeClient : IJusibeClient
     {
-        private SMSConfig config;
+        private readonly IHttpClientFactory _clientFactory;
+        private readonly JusibeClientOptions _jusibeClientOptions;
+        private readonly HttpClient _httpClient;
 
-        public JusibeClient(SMSConfig config) {
-            this.config = config;
-        }
-
-        public JusibeClient(string key, string token) {
-            this.config = new SMSConfig() {
-                AccessToken = token,
-                PublicKey = key
-            };
-        }
-
-        public async Task<ResponseModel> Send(RequestModel model) {
-            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("send_sms"));
-            request.Method = Constants.POST;
-            request.ContentType = Constants.X_WWW_FORM_URL_ENCODED;
-            request.Credentials = this.config.Credentials;
-            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
-            
-            return await Task.Run(() => {
-                using (var streamWriter = new StreamWriter(request.GetRequestStream())) {
-                    streamWriter.Write(model.AsQuery());
-                    streamWriter.Flush();
-                    streamWriter.Close();
-                }
-
-                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
-                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
-                        string responseAsText = sr.ReadToEnd();
-                        Console.WriteLine(responseAsText);
-                        ResponseModel responseModel = JsonConvert.DeserializeObject<ResponseModel>(responseAsText);
-                        return responseModel;
-                    }
-                }
-            });
-        }
-        
-        public async Task<CreditModel> GetCredits() {
-            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("get_credits"));
-            request.Method = Constants.GET;
-            request.ContentType = Constants.JSON;
-            request.Credentials = this.config.Credentials;
-            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
-            return await Task.Run(() => {
-                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
-                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
-                        string responseAsText = sr.ReadToEnd();
-                        Console.WriteLine(responseAsText);
-                        CreditModel responseModel = JsonConvert.DeserializeObject<CreditModel>(responseAsText);
-                        return responseModel;
-                    }
-                }
-            });
-        }
-
-        public async Task<DeliveryStatusModel> GetDeliveryStatus(string messageId) {
-            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("delivery_status?message_id=" + messageId));
-            request.Method = Constants.GET;
-            request.ContentType = Constants.JSON;
-            request.Credentials = this.config.Credentials;
-            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
-            return await Task.Run(() => {
-                using (var httpResponse = (HttpWebResponse)request.GetResponse()) {
-                    using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream())) {
-                        string responseAsText = sr.ReadToEnd();
-                        Console.WriteLine(responseAsText);
-                        DeliveryStatusModel responseModel = JsonConvert.DeserializeObject<DeliveryStatusModel>(responseAsText);
-                        return responseModel;
-                    }
-                }
-            });
-        }
-        
-      public async Task<ResponseModel> SendSms(RequestModel model)
+        public JusibeClient(IHttpClientFactory clientFactory)
         {
-            var request = (HttpWebRequest)WebRequest.Create(this.config.ResolveURL("send_sms"));
-            request.Method = Constants.POST;
-            request.ContentType = Constants.X_WWW_FORM_URL_ENCODED;
-            request.Credentials = this.config.Credentials;
-            request.Headers.Add("Authorization", this.config.AuthorizationHeader);
+            _clientFactory = clientFactory;
+            _httpClient = _clientFactory.CreateClient("jusibe");
+        }
 
-            return await Task.Run(async () => {
-                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-                {
-                    streamWriter.Write(model.AsQuery());
-                    streamWriter.Flush();
-                    streamWriter.Close();
-                }
+        public JusibeClient(JusibeClientOptions options)
+        {
+            _jusibeClientOptions = options;
+            _httpClient = new HttpClient();
+        }
 
-                var responseModel = new ResponseModel();
-                try
-                {//Exception occur here as a result of Insufficient credit balance, Invalid phone number or internet connectivity failure
-                    using (var httpResponse = (HttpWebResponse)request.GetResponse())
-                    {
-                        using (StreamReader sr = new StreamReader(httpResponse.GetResponseStream()))
-                        {
-                            string responseAsText = sr.ReadToEnd();
-                            Console.WriteLine(responseAsText);
-                            responseModel = JsonConvert.DeserializeObject<ResponseModel>(responseAsText);
-                        }
-                    }
-                }
-                catch (WebException ex)
-                {
-                    HttpWebResponse webResponse = (HttpWebResponse)ex.Response;
-                    if (webResponse != null)
-                    {
-                        if (webResponse.StatusCode == HttpStatusCode.BadRequest)
-                        {//Occur as a result of Insufficient credit balance or invalid number 
-                            var checkBalance = await GetCredits();
-                            responseModel.Status = checkBalance.SmsCredits <= 3 ? "Insufficient credit" : "Invalid number";
-                        }
-                        else
-                        {// Any other error that may occur
-                            responseModel.Status = "Unknown error";
-                        }
-                    }
-                    else //When there is internet connectivity failure 'webResponse' will be equal to null
-                    {
-                        responseModel.Status = "Internet problem";
-                    }
-                }
+        public async Task<ResponseModel> SendSms(RequestModel model)
+        {
+            HttpRequestMessage request;
+            if (_clientFactory == null)
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, $"{_jusibeClientOptions.BaseAddress}/send_sms");
+                request.Headers.Add("ContentType", "application/json");
+                request.Headers.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_jusibeClientOptions.Key}:{_jusibeClientOptions.Token}"))}");
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "send_sms");
+            }
+
+            request.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseModel = JsonConvert.DeserializeObject<ResponseModel>(await response.Content.ReadAsStringAsync());
                 return responseModel;
-            });
+            }
+            else
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+        }
+
+        public async Task<CreditModel> GetCredits()
+        {
+            HttpRequestMessage request;
+            if (_clientFactory == null)
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, $"{_jusibeClientOptions.BaseAddress}get_credits");
+                request.Headers.Add("ContentType", "application/json");
+                request.Headers.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_jusibeClientOptions.Key}:{_jusibeClientOptions.Token}"))}");
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "get_credits");
+            }
+
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseModel = JsonConvert.DeserializeObject<CreditModel>(await response.Content.ReadAsStringAsync());
+                return responseModel;
+            }
+            else
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+        }
+
+        public async Task<DeliveryStatusModel> GetDeliveryStatus(string messageId)
+        {
+            HttpRequestMessage request;
+            if (_clientFactory == null)
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, $"{_jusibeClientOptions.BaseAddress}/delivery_status?message_id={messageId}");
+                request.Headers.Add("ContentType", "application/json");
+                request.Headers.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_jusibeClientOptions.Key}:{_jusibeClientOptions.Token}"))}");
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, $"delivery_status?message_id={messageId}");
+            }
+
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseModel = JsonConvert.DeserializeObject<DeliveryStatusModel>(await response.Content.ReadAsStringAsync());
+                return responseModel;
+            }
+            else
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+        }
+
+        public async Task<BulkResponseModel> SendBulkSms(BulkRequestModel model)
+        {
+            HttpRequestMessage request;
+            if (_clientFactory == null)
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, $"{_jusibeClientOptions.BaseAddress}/bulk/send_sms");
+                request.Headers.Add("ContentType", "application/json");
+                request.Headers.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_jusibeClientOptions.Key}:{_jusibeClientOptions.Token}"))}");
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "bulk/send_sms");
+            }
+
+            request.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseModel = JsonConvert.DeserializeObject<BulkResponseModel>(await response.Content.ReadAsStringAsync());
+                return responseModel;
+            }
+            else
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+        }
+
+        public async Task<BulkStatusResponseModel> GetBulkSmsStatus(string bulkMessageId)
+        {
+            HttpRequestMessage request;
+            if (_clientFactory == null)
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, $"{_jusibeClientOptions.BaseAddress}bulk/status?bulk_message_id={bulkMessageId}");
+                request.Headers.Add("ContentType", "application/json");
+                request.Headers.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_jusibeClientOptions.Key}:{_jusibeClientOptions.Token}"))}");
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, $"bulk/status?bulk_message_id={bulkMessageId}");
+            }
+
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<BulkStatusResponseModel>(await response.Content.ReadAsStringAsync());
+                return responseModel;
+            }
+            else
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
         }
     }
 }

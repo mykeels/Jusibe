@@ -1,23 +1,19 @@
-using System;
-using System.Linq;
-using System.Net;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Jusibe.Models
 {
     public class DeliveryStatusModel
     {
-        [ JsonProperty("message_id") ]
+        [JsonProperty("message_id")]
         public string MessageId { get; set; }
 
-        [ JsonProperty("status") ]
+        [JsonProperty("status")]
         public string Status { get; set; }
 
-        [ JsonProperty("date_sent") ]
+        [JsonProperty("date_sent")]
         public string DateSent { get; set; }
 
-        [ JsonProperty("date_delivered") ]
+        [JsonProperty("date_delivered")]
         public string DateDelivered { get; set; }
     }
 }

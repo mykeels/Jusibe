@@ -9,43 +9,74 @@ dotnet add package Jusibe
 ```
 
 ## Usage
+### To use this client in a .NET Core application:
 
-A Client class provides three public methods for accessing the API. Instantianting the class is as given below:
+1. First, in your `appsettings.json` file, create a new section for Jusibe.
+
+```json
+"Jusibe": {
+    "Key": "Your API Key here",
+    "Token": "You can get both the Key and Token from your Jusibe Dashboard",
+    "BaseAddress" : "Jusibe Base Address. (It's probably 'https://jusibe.com/smsapi')"
+}
+```
+2. Add this snippet to your ConfigureServices method in your Startup.cs file:
+```cs
+using Jusibe;
+
+public void ConfigureServices(IServiceCollection services)
+{
+    // other services ommitted for brevity
+    services.AddJusibeClient(Configuration);
+}
+```
+
+And then the client can be added wherever it is needed via Dependency Injection: 
+```cs
+public class SmsService
+{
+    private readonly IJusibeClient _jusibeClient;
+
+    public SmsService(IJusibeClient jusibeClient)
+    {
+        _jusibeClient = jusibeClient;
+    }
+    ...
+    // Rest of your code here...
+}
+```
+
+### To use this client in a .NET CLI appication:
 
 ```cs
 using Jusibe;
-using Jusibe.Models;
 
-JusibeClient client = new JusibeClient(new SMSConfig() {
-    AccessToken = System.Environment.GetEnvironmentVariable("Jusibe_Token"),
-    PublicKey = System.Environment.GetEnvironmentVariable("Jusibe_Key")
+var jusibeClient = new JusibeClient(new JusibeClientOptions
+{
+    Key = "Your Jusibe Key Here",
+    Token = "Your Jusibe Token Here",
+    BaseAddress = "https://jusibe.com/smsapi"
 });
 ```
 
 ## What can you do with this?
 
-With a Jusibe Client, you can ...
+With this Jusibe Client, you can ...
 
 ### Send SMS
 
 ```cs
-var result = client.Send(new RequestModel() {
+ResponseModel result = await jusibeClient.SendSms(new RequestModel() {
     From = "mykeels",
-    To = System.Environment.GetEnvironmentVariable("Phone"),
+    To = "08012345678",
     Message = "Hello World"
-}).Result;
-
-Console.WriteLine(result.Status);
-Console.WriteLine(result.MessageId);
-Console.WriteLine(result.SmsCredits); // credits used to send the SMS
+});
 ```
 
 ### Get SMS Credits
 
 ```cs
-var result = client.GetCredits().Result;
-
-Console.WriteLine(result.SmsCredits);
+CreditModel result = await client.GetCredits();
 ```
 
 ### Check Delivery Status
@@ -53,16 +84,34 @@ Console.WriteLine(result.SmsCredits);
 This gives you information on the delivery status of previous sent messages.
 
 ```cs
-var result = client.GetDeliveryStatus("message_id").Result;
+DeliveryStatusModel result = await client.GetDeliveryStatus("message_id");
+```
 
-Console.WriteLine(result.SmsCredits);
+### Send Bulk SMS
+
+Lets you send Bulk sms:
+
+```cs
+BulkResponseModel result = await client.SendBulkSms(new BulkRequestModel() {
+    From = "mykeels",
+    To = "08012345678,08012345678", // phone numbers separated by commas
+    Message = "Hello World"
+});
+```
+
+### Check Bulk SMS Delivery Status
+
+This gives you information on the delivery status of previous sent bulk message.
+
+```cs
+BulkStatusResponseModel result = await client.GetBulkSmsStatus("bulk_message_id");
 ```
 
 ## Want to Contribute
 
 You are free to fork this repo and make pull requests to enhance the functionalities of this library.
 
-### How you can thank me
+### How you can thank us
 
 - Follow [@mykeels](https://twitter.com/mykeels) on twitter
 - Star this github repo
@@ -70,6 +119,10 @@ You are free to fork this repo and make pull requests to enhance the functionali
 - Provide useful critism. I would love to hear from you, really
 
 Thanks, Ikechi Michael I.
+
+PS.
+[@allengblack](https://github.com/allengblack) made some significant updates to this. Follow him on [Twitter](https://twitter.com/allengblack), too!
+
 
 ### License
 The MIT License (MIT). Please see License File for more information.
